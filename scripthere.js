@@ -60,6 +60,13 @@ function drawO(getArray){
     ctx.stroke();
 }
 
+function writeString(ayat){
+    var myCanvas=document.getElementById("thisIsCanvas");
+    var ctx=myCanvas.getContext("2d");
+    ctx.font = "20px Georgia";
+    ctx.fillText(ayat,100,350);
+}
+
 function getRow(num){
     if (num <=100){
         return 0
@@ -147,10 +154,12 @@ function printMousePos(event) {
     console.log("findunfilledbox " + findUnfilledBox);
     console.log("turn " + turn);
 
-    if(turn % 2 == 0 & filledBox[targetBox] == 0){
-        filledBox[targetBox] = 2;
-        turn += 1;
-        findUnfilledBox = 0;
+    if(result()){
+        if(turn % 2 == 0 & filledBox[targetBox] == 0){
+            filledBox[targetBox] = 2;
+            turn += 1;
+            findUnfilledBox = 0;
+        }
     }
 }
 
@@ -158,7 +167,8 @@ function botTurn(){
     var randomNumber;
     while(findUnfilledBox == 0){
         randomNumber = Math.floor(Math.random()*10000) % 9;
-        console.log(randomNumber);
+        console.log("random number" + randomNumber);
+
         if (filledBox[randomNumber]== 0){
             filledBox[randomNumber] = 1;
             findUnfilledBox = 1;
@@ -169,31 +179,68 @@ function botTurn(){
 
 window.addEventListener("click", printMousePos);
 
-function drawGame(){
-
+function result(){
     if (winner == 1 | winner == 2){
         //document.body.textContent = "Winner is " + winner;
-        console.log("Winner is " + winner)
+        console.log("Winner is " + winner);
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+function drawOX(){
+    for(i=0;i<9;i++){
+        if (filledBox[i]== 1){
+            var toFill = colNumber(i);
+            drawX(toFill);
+        }
+        else if (filledBox[i] == 2){
+            var toFill = colNumber(i);
+            drawO(toFill);
+        }
+    }
+}
+
+function allFilled(){
+    var trueFalse = false;
+
+    for (i=0;i<9;i++){
+        if (filledBox[i]==0){
+            trueFalse = true;
+        }
+    }
+
+    return trueFalse
+}
+
+function drawGame(){
+
+    
+    drawBox();
+    drawOX();
+    checkWinner1();
+    checkWinner2();  
+
+    if(result() & allFilled()){        
+        if ( (turn % 2==1)){
+            botTurn();
+        }
     }
 
     else{
-        drawBox();
-        for(i=0;i<9;i++){
-            if (filledBox[i]== 1){
-                var toFill = colNumber(i);
-                drawX(toFill);
-            }
-            else if (filledBox[i] == 2){
-                var toFill = colNumber(i);
-                drawO(toFill);
-            }
+        if (winner == 1){
+            writeString("CPU WIN"); 
         }
-        checkWinner1();
-        checkWinner2();
-    }
-    
-    if (turn % 2 ==1){
-        botTurn();
+        else if (winner == 2){
+            writeString("YOU WIN");
+
+        }
+        else{
+            writeString("DRAW");
+        }
+        console.log("Tamat");
     }
 }
 
